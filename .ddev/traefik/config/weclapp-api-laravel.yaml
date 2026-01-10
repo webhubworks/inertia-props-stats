@@ -1,0 +1,104 @@
+#ddev-generated
+# If you remove the ddev-generated line above you
+# are responsible for maintaining this file. DDEV will not then
+# update it, for example if you add `additional_hostnames`, etc.
+
+http:
+  routers:
+    inertia-props-stats-web-80-http:
+      entrypoints:
+        - http-80
+      rule: HostRegexp(`^inertia-props-stats\.ddev\.site$`)
+
+      service: "inertia-props-stats-web-80"
+      ruleSyntax: v3
+      tls: false
+      # middlewares:
+      #   - "inertia-props-stats-redirectHttps"
+    inertia-props-stats-web-8025-http:
+      entrypoints:
+        - http-8025
+      rule: HostRegexp(`^inertia-props-stats\.ddev\.site$`)
+
+      service: "inertia-props-stats-web-8025"
+      ruleSyntax: v3
+      tls: false
+      # middlewares:
+      #   - "inertia-props-stats-redirectHttps"
+    inertia-props-stats-xhgui-80-http:
+      entrypoints:
+        - http-8143
+      rule: HostRegexp(`^inertia-props-stats\.ddev\.site$`)
+
+      service: "inertia-props-stats-xhgui-80"
+      ruleSyntax: v3
+      tls: false
+      # middlewares:
+      #   - "inertia-props-stats-redirectHttps"
+
+
+
+    inertia-props-stats-web-80-https:
+      entrypoints:
+        - http-443
+      rule: HostRegexp(`^inertia-props-stats\.ddev\.site$`)
+
+      service: "inertia-props-stats-web-80"
+      ruleSyntax: v3
+
+      tls: true
+
+    inertia-props-stats-web-8025-https:
+      entrypoints:
+        - http-8026
+      rule: HostRegexp(`^inertia-props-stats\.ddev\.site$`)
+
+      service: "inertia-props-stats-web-8025"
+      ruleSyntax: v3
+
+      tls: true
+
+
+    inertia-props-stats-xhgui-80-https:
+      entrypoints:
+        - http-8142
+      rule: HostRegexp(`^inertia-props-stats\.ddev\.site$`)
+
+      service: "inertia-props-stats-xhgui-80"
+      ruleSyntax: v3
+
+      tls: true
+
+
+
+  middlewares:
+    inertia-props-stats-redirectHttps:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  services:
+    inertia-props-stats-web-80:
+      loadbalancer:
+        servers:
+          - url: http://ddev-inertia-props-stats-web:80
+
+    inertia-props-stats-web-8025:
+      loadbalancer:
+        servers:
+          - url: http://ddev-inertia-props-stats-web:8025
+
+
+
+    inertia-props-stats-xhgui-80:
+      loadbalancer:
+        servers:
+          - url: http://ddev-inertia-props-stats-xhgui:80
+
+
+
+
+tls:
+  certificates:
+    - certFile: /mnt/ddev-global-cache/traefik/certs/inertia-props-stats.crt
+      keyFile: /mnt/ddev-global-cache/traefik/certs/inertia-props-stats.key
