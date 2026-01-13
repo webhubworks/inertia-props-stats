@@ -51,7 +51,7 @@ Recommended thresholds:
 
 ## Vue.js Component
 
-An example Vue.js component is included in `resources/js/components/InertiaPropsStats.vue` that you can copy and paste into your main app.
+An example Vue.js component is included in `resources/js/components/InertiaPropsStatsPanel.vue` that you can copy and paste into your main app.
 
 This component:
 - Monitors the `_inertiaPayloadTotalSizeInKb` prop
@@ -63,18 +63,18 @@ To use it, copy the component to your Vue.js application and include it in your 
 
 ```vue
 <script setup>
-import InertiaPropsStats from '@/components/InertiaPropsStats.vue'
+import InertiaPropsStatsPanel from '@/components/InertiaPropsStatsPanel.vue'
 </script>
 
 <template>
   <div>
-    <InertiaPropsStats />
+    <InertiaPropsStatsPanel />
     <!-- Your app content -->
   </div>
 </template>
 ```
 
-Note: The component requires `vue-sonner` for toast notifications. Install it with:
+Note: The toast component requires `vue-sonner` for toast notifications. Install it with:
 
 ```bash
 npm install vue-sonner

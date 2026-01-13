@@ -30,11 +30,11 @@ const warnAboutPayloadExceeded = () => {
         'Inertia Payload Component Size (KB)': props._inertiaPayloadComponentSizeInKb.toFixed(2),
         'Inertia Payload Threshold (KB)': props._inertiaPayloadThresholdInKb.toFixed(2),
         'Inertia Payload Exceeded By (KB)': props._inertiaPayloadExceededInKb.toFixed(2),
-        'Inertia Duplicate Keys': props._inertiaPayloadDuplicateKeys,
+        'Inertia Same Keys': props._inertiaPayloadDuplicateKeys,
     })
 
     if(props._inertiaPayloadDuplicateKeys !== null && props._inertiaPayloadDuplicateKeys !==''){
-        toast.error(t('Duplicate key in shared and page props!'), {
+        toast.error(t('Same key in shared and page props!'), {
             description: ''
                 + t('You use the same key(s) in the Inertia shared props and the page props! Key(s): :keys', {
                     keys: props._inertiaPayloadDuplicateKeys,
