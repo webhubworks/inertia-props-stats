@@ -7,6 +7,14 @@ const isExpanded = ref(false)
 const showAnimation = ref(false)
 
 onMounted(() => {
+    console.table({
+        'Inertia Payload Total Size (KB)': props._inertiaPayloadTotalSizeInKb.toFixed(2),
+        'Inertia Payload Component Size (KB)': props._inertiaPayloadComponentSizeInKb.toFixed(2),
+        'Inertia Payload Threshold (KB)': props._inertiaPayloadThresholdInKb.toFixed(2),
+        'Inertia Payload Exceeded By (KB)': props._inertiaPayloadExceededInKb.toFixed(2),
+        'Inertia Same Keys': props._inertiaPayloadDuplicateKeys,
+    })
+
     if (shouldShow.value) {
         showAnimation.value = true
     }
@@ -30,14 +38,6 @@ const isPayloadExceeded = computed(() => {
 
 watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
     if (newValue && shouldShow.value) {
-        console.table({
-            'Inertia Payload Total Size (KB)': props._inertiaPayloadTotalSizeInKb.toFixed(2),
-            'Inertia Payload Component Size (KB)': props._inertiaPayloadComponentSizeInKb.toFixed(2),
-            'Inertia Payload Threshold (KB)': props._inertiaPayloadThresholdInKb.toFixed(2),
-            'Inertia Payload Exceeded By (KB)': props._inertiaPayloadExceededInKb.toFixed(2),
-            'Inertia Same Keys': props._inertiaPayloadDuplicateKeys,
-        })
-
         // Trigger animation on new page load
         showAnimation.value = false
         setTimeout(() => {
