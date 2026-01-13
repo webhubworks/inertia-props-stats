@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'payload_size' => [
-        'enabled' => env('INERTIA_PAYLOAD_SIZE_MEASUREMENT_ENABLED', true),
+    'enabled' => env('INERTIA_PAYLOAD_SIZE_MEASUREMENT_ENABLED', true),
 
+    'payload_size' => [
         /**
          * Recommendations:
          * - Soft limit: 100-200KB
@@ -11,4 +11,8 @@ return [
          */
         'threshold_in_kb' => (int) env('INERTIA_PAYLOAD_SIZE_THRESHOLD_IN_KB', 500),
     ],
+
+    'throw_exception' => [
+        'on_duplicate_keys' => env('INERTIA_PROPS_THROW_EXCEPTION_ON_DUPLICATE_KEYS', true),
+    ]
 ];

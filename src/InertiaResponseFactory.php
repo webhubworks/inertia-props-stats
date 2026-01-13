@@ -5,10 +5,14 @@ namespace Webhub\InertiaPropsStats;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 use LogicException;
+use Webhub\InertiaPropsStats\Exceptions\InertiaPropsDuplicateKeysException;
 use Webhub\InertiaPropsStats\Exceptions\InertiaPropsTooLargeException;
 
 class InertiaResponseFactory extends ResponseFactory
 {
+    /**
+     * @throws InertiaPropsDuplicateKeysException
+     */
     public function render($component, $props = []): Response
     {
         $response = parent::render($component, $props);
@@ -18,11 +22,17 @@ class InertiaResponseFactory extends ResponseFactory
         | MEASUREMENT OF INERTIA PROPS SIZE
         |--------------------------------------------------------------------------
         */
-        if (! config('inertia-props-stats.payload_size.enabled')) {
+        if (! config('inertia-props-stats.enabled')) {
             return $response;
         }
 
-        $sameKeys = array_intersect(array_keys($this->sharedProps), array_keys($props));
+        $duplicateKeys = array_intersect(array_keys($this->sharedProps), array_keys($props));
+
+        if(count($duplicateKeys) > 0 && config('inertia-props-stats.throw_exception.on_duplicate_keys')) {
+            throw new InertiaPropsDuplicateKeysException('Duplicate Inertia props keys detected: '.implode(', ', $duplicateKeys).'.
+                This can lead to unexpected behavior as shared props are resolved before component props.
+                Consider renaming the keys in either shared or component props to avoid duplication.');
+        }
 
         $responseForAllProps = clone $response;
         $responseForComponentProps = clone $response;
@@ -45,7 +55,7 @@ class InertiaResponseFactory extends ResponseFactory
             '_inertiaPayloadComponentSizeInKb' => $componentPropsSizeInKb,
             '_inertiaPayloadThresholdInKb' => $thresholdKb,
             '_inertiaPayloadExceededInKb' => $thresholdExceededByInKb,
-            '_inertiaPayloadSameKeys' => implode(', ', $sameKeys),
+            '_inertiaPayloadDuplicateKeys' => implode(', ', $duplicateKeys),
         ]);
 
         if ($componentPropsSizeInKb > $allPropsSizeInKb) {
