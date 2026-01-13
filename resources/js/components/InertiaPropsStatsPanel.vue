@@ -1,8 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
-import { t } from '@/lib/i18n.js';
-import { ChevronLeft } from 'lucide-vue-next';
 
 const props = usePage().props
 const isExpanded = ref(false)
@@ -15,15 +13,7 @@ onMounted(() => {
 })
 
 const shouldShow = computed(() => {
-    if (props.app.env === 'production') {
-        return false
-    }
-
-    if (props._inertiaPayloadTotalSizeInKb === undefined || props._inertiaPayloadTotalSizeInKb === null) {
-        return false
-    }
-
-    return true
+    return !(props._inertiaPayloadTotalSizeInKb === undefined || props._inertiaPayloadTotalSizeInKb === null);
 })
 
 const hasErrors = computed(() => {
@@ -36,13 +26,6 @@ const hasDuplicateKeys = computed(() => {
 
 const isPayloadExceeded = computed(() => {
     return props._inertiaPayloadExceededInKb > 0
-})
-
-const errorCount = computed(() => {
-    let count = 0
-    if (hasDuplicateKeys.value) count++
-    if (isPayloadExceeded.value) count++
-    return count
 })
 
 watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
@@ -73,7 +56,7 @@ watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
             class="bg-red-400 hover:bg-red-500 text-white px-0.5 py-3 rounded-l-lg shadow-lg hover:bg-gray-700 transition-colors flex flex-col items-center gap-2 cursor-pointer"
             :class="{ 'animate-slide-peek': showAnimation }"
         >
-            <ChevronLeft />
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
         </button>
 
         <!-- Expanded Panel -->
@@ -84,7 +67,7 @@ watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
             <!-- Header -->
             <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="font-semibold text-gray-900 dark:text-white">
-                    {{ t('Inertia Payload Stats') }}
+                    Inertia Payload Stats
                 </h3>
                 <button
                     @click="isExpanded = false"
@@ -108,12 +91,10 @@ watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
                             </svg>
                             <div>
                                 <p class="font-medium text-red-900 dark:text-red-200">
-                                    {{ t('Same key in shared and page props!') }}
+                                    Same key in shared and page props!
                                 </p>
                                 <p class="text-sm text-red-700 dark:text-red-300 mt-1">
-                                    {{ t('You use the same key(s) in the Inertia shared props and the page props! Key(s): :keys', {
-                                        keys: props._inertiaPayloadDuplicateKeys,
-                                    }) }}
+                                    You use the same key(s) in the Inertia shared props and the page props! Key(s): {{ props._inertiaPayloadDuplicateKeys }}
                                 </p>
                             </div>
                         </div>
@@ -127,14 +108,10 @@ watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
                             </svg>
                             <div>
                                 <p class="font-medium text-red-900 dark:text-red-200">
-                                    {{ t('Inertia page props too large!') }}
+                                    Inertia page props too large!
                                 </p>
                                 <p class="text-sm text-red-700 dark:text-red-300 mt-1">
-                                    {{ t('The current Inertia page props size is :size KB, which exceeds the recommended maximum of :maxSize KB by :exceededBy KB.', {
-                                        size: props._inertiaPayloadTotalSizeInKb.toFixed(2),
-                                        maxSize: props._inertiaPayloadThresholdInKb.toFixed(2),
-                                        exceededBy: props._inertiaPayloadExceededInKb.toFixed(2),
-                                    }) }}
+                                    The current Inertia page props size is {{ props._inertiaPayloadTotalSizeInKb.toFixed(2) }} KB, which exceeds the recommended maximum of {{ props._inertiaPayloadThresholdInKb.toFixed(2) }} KB by {{ props._inertiaPayloadExceededInKb.toFixed(2) }} KB.
                                 </p>
                             </div>
                         </div>
@@ -145,30 +122,30 @@ watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
                 <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
                     <table class="w-full text-sm">
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                            <tr>
-                                <td class="py-2 text-gray-600 dark:text-gray-400">{{ t('Total Size') }}</td>
-                                <td class="py-2 text-right font-medium text-gray-900 dark:text-white">
-                                    {{ props._inertiaPayloadTotalSizeInKb.toFixed(2) }} KB
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="py-2 text-gray-600 dark:text-gray-400">{{ t('Component Size') }}</td>
-                                <td class="py-2 text-right font-medium text-gray-900 dark:text-white">
-                                    {{ props._inertiaPayloadComponentSizeInKb.toFixed(2) }} KB
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="py-2 text-gray-600 dark:text-gray-400">{{ t('Threshold') }}</td>
-                                <td class="py-2 text-right font-medium text-gray-900 dark:text-white">
-                                    {{ props._inertiaPayloadThresholdInKb.toFixed(2) }} KB
-                                </td>
-                            </tr>
-                            <tr v-if="props._inertiaPayloadExceededInKb > 0">
-                                <td class="py-2 text-gray-600 dark:text-gray-400">{{ t('Exceeded By') }}</td>
-                                <td class="py-2 text-right font-medium text-red-600 dark:text-red-400">
-                                    {{ props._inertiaPayloadExceededInKb.toFixed(2) }} KB
-                                </td>
-                            </tr>
+                        <tr>
+                            <td class="py-2 text-gray-600 dark:text-gray-400">Total Size</td>
+                            <td class="py-2 text-right font-medium text-gray-900 dark:text-white">
+                                {{ props._inertiaPayloadTotalSizeInKb.toFixed(2) }} KB
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 text-gray-600 dark:text-gray-400">Component Size</td>
+                            <td class="py-2 text-right font-medium text-gray-900 dark:text-white">
+                                {{ props._inertiaPayloadComponentSizeInKb.toFixed(2) }} KB
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 text-gray-600 dark:text-gray-400">Threshold</td>
+                            <td class="py-2 text-right font-medium text-gray-900 dark:text-white">
+                                {{ props._inertiaPayloadThresholdInKb.toFixed(2) }} KB
+                            </td>
+                        </tr>
+                        <tr v-if="props._inertiaPayloadExceededInKb > 0">
+                            <td class="py-2 text-gray-600 dark:text-gray-400">Exceeded By</td>
+                            <td class="py-2 text-right font-medium text-red-600 dark:text-red-400">
+                                {{ props._inertiaPayloadExceededInKb.toFixed(2) }} KB
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
