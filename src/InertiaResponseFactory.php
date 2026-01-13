@@ -28,7 +28,7 @@ class InertiaResponseFactory extends ResponseFactory
 
         $duplicateKeys = array_intersect(array_keys($this->sharedProps), array_keys($props));
 
-        if(count($duplicateKeys) > 0 && config('inertia-props-stats.throw_exception.on_duplicate_keys')) {
+        if (count($duplicateKeys) > 0 && config('inertia-props-stats.throw_exception.on_duplicate_keys')) {
             throw new InertiaPropsDuplicateKeysException('Duplicate Inertia props keys detected: '.implode(', ', $duplicateKeys).'.
                 This can lead to unexpected behavior as shared props are resolved before component props.
                 Consider renaming the keys in either shared or component props to avoid duplication.');

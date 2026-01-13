@@ -14,5 +14,5 @@ return [
 
     'throw_exception' => [
         'on_duplicate_keys' => env('INERTIA_PROPS_THROW_EXCEPTION_ON_DUPLICATE_KEYS', true),
-    ]
+    ],
 ];
