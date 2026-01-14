@@ -90,7 +90,7 @@ class InertiaResponseFactory extends ResponseFactory
      *
      * @param  array<string, mixed>  $props  The resolved props array
      * @param  int  $maxDepth  Maximum recursion depth (0 = unlimited)
-     * @return array<string, mixed>  Tree structure with size information
+     * @return array<string, mixed> Tree structure with size information
      */
     protected function calculatePropSizes(array $props, int $maxDepth = 10): array
     {
