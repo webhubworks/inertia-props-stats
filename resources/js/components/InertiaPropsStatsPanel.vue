@@ -1,6 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
+import PropSizeTreeNode from './PropSizeTreeNode.vue'
 
 const props = usePage().props
 const isExpanded = ref(false)
@@ -36,6 +37,14 @@ const isPayloadExceeded = computed(() => {
     return props._inertiaPayloadExceededInKb > 0
 })
 
+const sizeTree = computed(() => {
+    return props._inertiaPayloadSizeTree ?? null
+})
+
+const hasSizeTree = computed(() => {
+    return sizeTree.value !== null && typeof sizeTree.value === 'object'
+})
+
 watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
     if (newValue && shouldShow.value) {
         // Trigger animation on new page load
@@ -62,7 +71,7 @@ watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
         <!-- Expanded Panel -->
         <div
             v-if="isExpanded"
-            class="bg-white border dark:bg-gray-800 shadow-xl rounded-l-lg w-96 max-h-[80vh] overflow-hidden flex flex-col"
+            class="bg-white border dark:bg-gray-800 shadow-xl rounded-l-lg w-full max-h-[80vh] overflow-hidden flex flex-col"
         >
             <!-- Header -->
             <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
@@ -148,6 +157,22 @@ watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
                         </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Prop Size Breakdown Tree -->
+                <div v-if="hasSizeTree" class="space-y-2">
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Prop Size Breakdown
+                    </h4>
+                    <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-2 max-h-64 overflow-y-auto">
+                        <PropSizeTreeNode
+                            :node="sizeTree"
+                            :root-total-size-kb="sizeTree.totalSizeKb"
+                        />
+                    </div>
+                    <p class="text-xs text-gray-400 dark:text-gray-500">
+                        Sorted by size (largest first). Click to expand/collapse.
+                    </p>
                 </div>
             </div>
         </div>
