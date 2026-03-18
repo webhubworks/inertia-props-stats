@@ -2,9 +2,12 @@
 
 namespace Webhub\InertiaPropsStats;
 
+use BackedEnum;
+use Inertia\PropsResolver;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 use LogicException;
+use UnitEnum;
 use Webhub\InertiaPropsStats\Exceptions\InertiaPropsDuplicateKeysException;
 
 class InertiaResponseFactory extends ResponseFactory
@@ -33,10 +36,8 @@ class InertiaResponseFactory extends ResponseFactory
                 Consider renaming the keys in either shared or component props to avoid duplication.');
         }
 
-        $responseForAllProps = clone $response;
-        $responseForComponentProps = clone $response;
-        $allResolvedProps = $responseForAllProps->resolveProperties(request(), array_merge($this->sharedProps, $props));
-        $resolvedComponentProps = $responseForComponentProps->resolveProperties(request(), $props);
+        $allResolvedProps = $this->resolvePropsForMeasurement($component, $this->sharedProps, $props);
+        $resolvedComponentProps = $this->resolvePropsForMeasurement($component, [], $props);
 
         $allPropsJson = json_encode($allResolvedProps);
         $allPropsSizeInBytes = strlen($allPropsJson);
@@ -83,6 +84,36 @@ class InertiaResponseFactory extends ResponseFactory
         }
 
         return $response;
+    }
+
+    /**
+     * Resolve props for measurement using the PropsResolver.
+     *
+     * @param  array<string, mixed>  $sharedProps
+     * @param  array<string, mixed>  $props
+     * @return array<string, mixed>
+     */
+    protected function resolvePropsForMeasurement(BackedEnum|UnitEnum|string $component, array $sharedProps, array $props): array
+    {
+        $componentName = match (true) {
+            $component instanceof BackedEnum => $component->value,
+            $component instanceof UnitEnum => $component->name,
+            default => $component,
+        };
+
+        // Inertia v3: PropsResolver class handles prop resolution
+        if (class_exists(PropsResolver::class)) {
+            $resolver = new PropsResolver(request(), $componentName);
+
+            [$resolved] = $resolver->resolve($sharedProps, $props);
+
+            return $resolved;
+        }
+
+        // Inertia v2: resolveProperties() lives on the Response object
+        $response = parent::render($componentName, array_merge($sharedProps, $props));
+
+        return $response->resolveProperties(request(), array_merge($sharedProps, $props));
     }
 
     /**
