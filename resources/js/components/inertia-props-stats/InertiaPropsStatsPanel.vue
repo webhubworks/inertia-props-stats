@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
-import PropSizeTreeNode from './PropSizeTreeNode.vue'
+import PropSizeTreeNode from '@/components/inertia-props-stats/PropSizeTreeNode.vue'
 
 const props = usePage().props
 const isExpanded = ref(false)
 const showAnimation = ref(false)
 
 onMounted(() => {
-    console.table({
-        'Inertia Payload Total Size (KB)': props._inertiaPayloadTotalSizeInKb.toFixed(2),
-        'Inertia Payload Component Size (KB)': props._inertiaPayloadComponentSizeInKb.toFixed(2),
-        'Inertia Payload Threshold (KB)': props._inertiaPayloadThresholdInKb.toFixed(2),
-        'Inertia Payload Exceeded By (KB)': props._inertiaPayloadExceededInKb.toFixed(2),
-        'Inertia Same Keys': props._inertiaPayloadDuplicateKeys,
-    })
+    if(props._inertiaPayloadTotalSizeInKb !== undefined && props._inertiaPayloadTotalSizeInKb !== null){
+        console.table({
+            'Inertia Payload Total Size (KB)': props._inertiaPayloadTotalSizeInKb.toFixed(2),
+            'Inertia Payload Component Size (KB)': props._inertiaPayloadComponentSizeInKb.toFixed(2),
+            'Inertia Payload Threshold (KB)': props._inertiaPayloadThresholdInKb.toFixed(2),
+            'Inertia Payload Exceeded By (KB)': props._inertiaPayloadExceededInKb.toFixed(2),
+            'Inertia Same Keys': props._inertiaPayloadDuplicateKeys,
+        })
+    }
 
     if (shouldShow.value) {
         showAnimation.value = true
@@ -57,13 +59,13 @@ watch(() => props._inertiaPayloadTotalSizeInKb, (newValue) => {
 </script>
 
 <template>
-    <div v-if="hasErrors && shouldShow" class="fixed right-0 top-1/2 -translate-y-1/2 z-50">
+    <div v-if="shouldShow" class="fixed right-0 top-1/2 -translate-y-1/2 z-50">
         <!-- Tab/Label -->
         <button
             v-if="!isExpanded"
             @click="isExpanded = true"
-            class="bg-red-400 hover:bg-red-500 text-white px-0.5 py-3 rounded-l-lg shadow-lg hover:bg-gray-700 transition-colors flex flex-col items-center gap-2 cursor-pointer"
-            :class="{ 'animate-slide-peek': showAnimation }"
+            class="bg-gray-400 hover:bg-gray-500 text-white px-0.5 py-3 rounded-l-lg shadow-lg hover:bg-gray-700 transition-colors flex flex-col items-center gap-2 cursor-pointer"
+            :class="{ 'animate-slide-peek': hasErrors && showAnimation, 'bg-red-400 hover:bg-red-500': hasErrors }"
         >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
         </button>

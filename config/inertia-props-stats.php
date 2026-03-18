@@ -1,6 +1,10 @@
 <?php
 
 return [
+    /**
+     * We do not enable the measurement when app()->isProduction()
+     * or when this value is false.
+     */
     'enabled' => env('INERTIA_PAYLOAD_SIZE_MEASUREMENT_ENABLED', true),
 
     'payload_size' => [
